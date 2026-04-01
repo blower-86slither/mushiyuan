@@ -32,13 +32,27 @@
         body {
             margin: 0;
             padding: 0;
-            min-height: auto;
+            min-height: 100vh;
             width: 100%;
             font-family: 'Noto Serif SC', serif;
             overflow-x: hidden;
             overflow-y: auto;
             transition: background 1s ease;
             background-attachment: fixed;
+            position: relative;
+        }
+
+        /* 页面底部填充层 */
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 100vh;
+            background: inherit;
+            pointer-events: none;
+            z-index: -1;
         }
 
         /* 动态背景状态 */
@@ -3424,7 +3438,7 @@
             // 尝试自动��放背景音乐
             initAudioContext();
             const playBgMusic = () => {
-                bgMusic.volume = 0.2; // 开始界面音量稍低
+                bgMusic.volume = 0.3; // 提高音量
                 bgMusic.loop = true;
                 bgMusic.play().then(() => {
                     isMusicPlaying = true;
@@ -3441,11 +3455,14 @@
                 });
             };
 
-            if (audioContext.state === 'suspended') {
-                audioContext.resume().then(playBgMusic);
-            } else {
-                playBgMusic();
-            }
+            // 延迟执行，确保 AudioContext 已初始化
+            setTimeout(() => {
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume().then(playBgMusic);
+                } else {
+                    playBgMusic();
+                }
+            }, 500);
         });
 
         // 创建樱花雨特效
