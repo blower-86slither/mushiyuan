@@ -5125,6 +5125,24 @@
 
         // 初始化
 
+        // 确保音乐在用户交互后播放
+        let userInteracted = false;
+        document.addEventListener('click', function() {
+            if (!userInteracted) {
+                userInteracted = true;
+                initAudioContext();
+                if (!isMusicPlaying) {
+                    bgMusic.volume = 0.2;
+                    bgMusic.loop = true;
+                    bgMusic.play().then(() => {
+                        isMusicPlaying = true;
+                        document.getElementById('musicIcon').className = 'fa fa-volume-up text-sm';
+                        console.log('用户点击后音乐开始播放');
+                    }).catch(e => console.log('音乐播放失败:', e));
+                }
+            }
+        }, { once: true });
+
         // 键盘快捷键
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !document.getElementById('startScreen').classList.contains('hidden')) {
