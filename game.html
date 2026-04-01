@@ -2130,7 +2130,7 @@
     </div>
 
     <!-- 音频元素 -->
-    <audio id="bgMusic" loop>
+    <audio id="bgMusic" loop preload="auto">
         <source src="./huaxin.mp3" type="audio/mpeg">
     </audio>
 
@@ -5149,8 +5149,9 @@
                 userInteracted = true;
                 initAudioContext();
                 if (!isMusicPlaying) {
-                    bgMusic.volume = 0.2;
+                    bgMusic.volume = 0.4;
                     bgMusic.loop = true;
+                    bgMusic.currentTime = 0;
                     bgMusic.play().then(() => {
                         isMusicPlaying = true;
                         document.getElementById('musicIcon').className = 'fa fa-volume-up text-sm';
