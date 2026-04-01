@@ -3417,9 +3417,35 @@
             }
         }
 
-        // 页面加载后启动树叶效果
+        // 页面加载后启动树叶效果和背景音乐
         window.addEventListener('load', function() {
             setTimeout(startTreeLeaves, 2000);
+
+            // 尝试自动��放背景音乐
+            initAudioContext();
+            const playBgMusic = () => {
+                bgMusic.volume = 0.2; // 开始界面音量稍低
+                bgMusic.loop = true;
+                bgMusic.play().then(() => {
+                    isMusicPlaying = true;
+                    document.getElementById('musicIcon').className = 'fa fa-volume-up text-sm';
+                }).catch(() => {
+                    // 自动播放失败，等待用���交互
+                    document.addEventListener('click', function tryPlay() {
+                        bgMusic.play().then(() => {
+                            isMusicPlaying = true;
+                            document.getElementById('musicIcon').className = 'fa fa-volume-up text-sm';
+                        }).catch(() => {});
+                        document.removeEventListener('click', tryPlay);
+                    }, { once: true });
+                });
+            };
+
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().then(playBgMusic);
+            } else {
+                playBgMusic();
+            }
         });
 
         // 创建樱花雨特效
