@@ -3767,13 +3767,23 @@
 
         // 开始游戏
         function startGame() {
-            // 立即播放音乐（优先执行）
+            // 初始化并恢复音频上下文
             initAudioContext();
-            bgMusic.volume = 0.3;
-            bgMusic.currentTime = 0;
-            bgMusic.play().catch(() => {});
-            isMusicPlaying = true;
-            document.getElementById('musicIcon').className = 'fa fa-volume-up text-sm';
+
+            // 等待 AudioContext 就绪后播放音乐
+            const playMusic = () => {
+                bgMusic.volume = 0.3;
+                bgMusic.currentTime = 0;
+                bgMusic.play().catch(e => console.log('音乐播放失败:', e));
+                isMusicPlaying = true;
+                document.getElementById('musicIcon').className = 'fa fa-volume-up text-sm';
+            };
+
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().then(playMusic);
+            } else {
+                playMusic();
+            }
 
             // 播放恐怖点击音效
             playHorrorClick();
@@ -4666,6 +4676,10 @@
         function initAudioContext() {
             if (!audioContext) {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            // 恢复 AudioContext（浏��器可能默认暂停）
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
             }
         }
 
